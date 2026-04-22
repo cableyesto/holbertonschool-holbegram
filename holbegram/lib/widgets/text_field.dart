@@ -44,14 +44,7 @@ class TextFieldInput extends StatelessWidget {
         ),
         filled: true,
         contentPadding: const EdgeInsets.all(8),
-        suffixIcon: suffixIcon != null
-        ? IconTheme(
-            data: const IconThemeData(
-              color: Color.fromARGB(218, 226, 37, 24),
-            ),
-            child: suffixIcon!,
-          )
-        : null,
+        suffixIcon: suffixIcon,
       ),
       textInputAction: TextInputAction.next,
       obscureText: ispassword,

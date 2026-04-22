@@ -95,6 +95,6 @@ flutter:
     - family: Billabong
       fonts:
         - asset: assets/fonts/Billabong.ttf
-        - asset: assets/fonts/InstagramSans.ttf
+#        - asset: assets/fonts/InstagramSans.ttf
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
