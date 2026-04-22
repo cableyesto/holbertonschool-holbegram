@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../widgets/text_field.dart';
 import 'login_screen.dart';
+import '../methods/auth_methods.dart';
 
 class SignUp extends StatefulWidget {
   final TextEditingController emailController;
@@ -137,7 +138,28 @@ class _SignUpState extends State<SignUp> {
                           const Color.fromARGB(218, 226, 37, 24),
                         ),
                       ),
-                      onPressed: () {},
+                      onPressed: () async {
+                        String result = await AuthMethode().signUpUser(
+                          email: widget.emailController.text,
+                          password: widget.passwordController.text,
+                          username: widget.usernameController.text,
+                          file: null,
+                        );
+
+                        if (result == 'success') {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Sign up successful!'),
+                            ),
+                          );
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(result),
+                            ),
+                          );
+                        }
+                      },
                       child: const Text(
                         'Sign up',
                         style: TextStyle(color: Colors.white),
