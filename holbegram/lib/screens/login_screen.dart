@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../widgets/text_field.dart';
 import 'signup_screen.dart';
 import '../methods/auth_methods.dart';
+import 'upload_image_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   final TextEditingController emailController;
@@ -103,11 +106,37 @@ class _LoginScreenState extends State<LoginScreen> {
                         );
 
                         if (result == 'success') {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Login'),
-                            ),
-                          );
+                          // Get current user and fetch username from Firestore
+                          final user = FirebaseAuth.instance.currentUser;
+                          if (user != null) {
+                            try {
+                              final userDoc = await FirebaseFirestore.instance
+                                  .collection('users')
+                                  .doc(user.uid)
+                                  .get();
+
+                              String username = userDoc.data()?['username'] ??
+                                  widget.emailController.text.split('@')[0];
+
+                              // Navigate to upload image screen
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => AddPicture(
+                                    email: widget.emailController.text,
+                                    password: widget.passwordController.text,
+                                    username: username,
+                                  ),
+                                ),
+                              );
+                            } catch (e) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('Error fetching user data: $e'),
+                                ),
+                              );
+                            }
+                          }
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
