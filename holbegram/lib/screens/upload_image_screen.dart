@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import '../methods/auth_methods.dart';
 import 'auth/methods/user_storage.dart';
+import 'home.dart';
 
 class AddPicture extends StatefulWidget {
   final String email;
@@ -171,9 +172,11 @@ class _AddPictureState extends State<AddPicture> {
                           );
 
                           if (result == 'success') {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('success'),
+                            // Navigate to Home screen
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const Home(),
                               ),
                             );
                           } else {
