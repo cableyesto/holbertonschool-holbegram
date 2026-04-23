@@ -70,6 +70,48 @@ class PostStorage {
     return publicIdWithExtension;
   }
 
+  Future<String> savePost(String postId, String uid) async {
+    print('=== savePost called ===');
+    print('postId: $postId');
+    print('uid: $uid');
+
+    try {
+      print('Attempting to add postId to user saved array...');
+
+      // Add postId to user's saved array
+      await _firestore.collection('users').doc(uid).update({
+        'saved': FieldValue.arrayUnion([postId])
+      });
+
+      print('Successfully saved post!');
+      return 'success';
+    } catch (e) {
+      print('Error saving post: $e');
+      return e.toString();
+    }
+  }
+
+  Future<String> unsavePost(String postId, String uid) async {
+    print('=== unsavePost called ===');
+    print('postId: $postId');
+    print('uid: $uid');
+
+    try {
+      print('Attempting to remove postId from user saved array...');
+
+      // Remove postId from user's saved array
+      await _firestore.collection('users').doc(uid).update({
+        'saved': FieldValue.arrayRemove([postId])
+      });
+
+      print('Successfully unsaved post!');
+      return 'success';
+    } catch (e) {
+      print('Error unsaving post: $e');
+      return e.toString();
+    }
+  }
+
   Future<void> deletePost(String postId, String publicId) async {
     try {
       // Get post to extract the actual public_id from postUrl

@@ -131,8 +131,36 @@ class _PostsState extends State<Posts> {
                         child: Row(
                           children: [
                             IconButton(
-                              icon: const Icon(Icons.favorite_border),
-                              onPressed: () {},
+                              icon: Icon(
+                                user?.saved.contains(post['postId']) ?? false
+                                    ? Icons.favorite
+                                    : Icons.favorite_border,
+                                color: user?.saved.contains(post['postId']) ?? false
+                                    ? Colors.red
+                                    : null,
+                              ),
+                              onPressed: () async {
+                                if (user != null) {
+                                  bool isSaved = user.saved.contains(post['postId']);
+
+                                  if (isSaved) {
+                                    await PostStorage().unsavePost(
+                                      post['postId'],
+                                      user.uid,
+                                    );
+                                  } else {
+                                    await PostStorage().savePost(
+                                      post['postId'],
+                                      user.uid,
+                                    );
+                                  }
+                                  // Refresh user data to update UI
+                                  await Provider.of<UserProvider>(context, listen: false).refreshUser();
+                                  print('User data refreshed');
+                                } else {
+                                  print('User is null!');
+                                }
+                              },
                             ),
                             IconButton(
                               icon: const Icon(Icons.comment_outlined),
