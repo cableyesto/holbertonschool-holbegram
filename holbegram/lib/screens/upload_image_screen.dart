@@ -173,7 +173,7 @@ class _AddPictureState extends State<AddPicture> {
 
                           if (result == 'success') {
                             // Navigate to Home screen
-                            Navigator.push(
+                            Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
                                 builder: (context) => const Home(),

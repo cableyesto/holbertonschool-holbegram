@@ -105,7 +105,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                         if (result == 'success') {
                           // Navigate to Home screen
-                          Navigator.push(
+                          Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
                               builder: (context) => const Home(),
