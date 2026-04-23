@@ -1,10 +1,14 @@
 import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:uuid/uuid.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 import '../../auth/methods/user_storage.dart';
 
 class PostStorage {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final String cloudinaryUrl = "https://api.cloudinary.com/v1_1/dgdt9oi05/image/destroy";
+  final String cloudinaryPreset = "ml_default";
 
   Future<String> uploadPost(
     String caption,
@@ -42,8 +46,55 @@ class PostStorage {
     }
   }
 
+  String _extractPublicIdFromUrl(String url) {
+    // URL format: https://res.cloudinary.com/{cloud_name}/image/upload/v{version}/{folder}/{public_id}.{format}
+    // Extract the public_id including folder
+    final uri = Uri.parse(url);
+    final pathSegments = uri.pathSegments;
+
+    // Find the index of 'upload'
+    final uploadIndex = pathSegments.indexOf('upload');
+    if (uploadIndex == -1 || uploadIndex + 2 >= pathSegments.length) {
+      throw Exception('Invalid Cloudinary URL format');
+    }
+
+    // Get everything after 'upload' and version (skip v{version})
+    final publicIdWithExtension = pathSegments.sublist(uploadIndex + 2).join('/');
+
+    // Remove file extension
+    final lastDotIndex = publicIdWithExtension.lastIndexOf('.');
+    if (lastDotIndex != -1) {
+      return publicIdWithExtension.substring(0, lastDotIndex);
+    }
+
+    return publicIdWithExtension;
+  }
+
   Future<void> deletePost(String postId, String publicId) async {
     try {
+      // Get post to extract the actual public_id from postUrl
+      final postDoc = await _firestore.collection('posts').doc(postId).get();
+      if (!postDoc.exists) {
+        print('Post not found');
+        return;
+      }
+
+      final postData = postDoc.data() as Map<String, dynamic>;
+      final postUrl = postData['postUrl'] as String;
+      final extractedPublicId = _extractPublicIdFromUrl(postUrl);
+
+      // Delete image from Cloudinary
+      final response = await http.post(
+        Uri.parse(cloudinaryUrl),
+        body: {
+          'upload_preset': cloudinaryPreset,
+          'public_id': extractedPublicId,
+        },
+      );
+
+      print('Cloudinary delete response: ${response.statusCode}');
+      print('Cloudinary delete body: ${response.body}');
+
       // Delete post from Firestore
       await _firestore.collection('posts').doc(postId).delete();
     } catch (e) {
