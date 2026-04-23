@@ -40,6 +40,11 @@ class PostStorage {
         'likes': [],
       });
 
+      // Add postId to user's posts array
+      await _firestore.collection('users').doc(uid).update({
+        'posts': FieldValue.arrayUnion([postId])
+      });
+
       return 'Ok';
     } catch (e) {
       return e.toString();
@@ -139,6 +144,24 @@ class PostStorage {
 
       // Delete post from Firestore
       await _firestore.collection('posts').doc(postId).delete();
+
+      // Remove postId from the poster's posts array
+      final uid = postData['uid'] as String;
+      await _firestore.collection('users').doc(uid).update({
+        'posts': FieldValue.arrayRemove([postId])
+      });
+
+      // Remove postId from all users' saved arrays
+      final usersSnapshot = await _firestore
+          .collection('users')
+          .where('saved', arrayContains: postId)
+          .get();
+
+      for (var userDoc in usersSnapshot.docs) {
+        await _firestore.collection('users').doc(userDoc.id).update({
+          'saved': FieldValue.arrayRemove([postId])
+        });
+      }
     } catch (e) {
       print('Error deleting post: $e');
       rethrow;
