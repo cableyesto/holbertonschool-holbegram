@@ -51,7 +51,7 @@ void main() {
         email: testEmail,
         password: 'TestPassword123!',
         username: 'testuser_$timestamp',
-        file: null,
+        photoUrl: '',
       );
 
       print('Test 1 Result: $result');
@@ -79,7 +79,7 @@ void main() {
         email: testEmail,
         password: 'TestPassword123!',
         username: testUsername,
-        file: null,
+        photoUrl: '',
       );
 
       print('Test 2 Result: $result');
@@ -124,7 +124,7 @@ void main() {
         email: testEmail,
         password: 'TestPassword123!',
         username: 'bugtest_$timestamp',
-        file: null,
+        photoUrl: '',
       );
 
       stopwatch.stop();
@@ -164,7 +164,7 @@ void main() {
         email: '',
         password: 'password',
         username: '',
-        file: null,
+        photoUrl: '',
       );
 
       print('Test 4 Result: $result');
@@ -186,7 +186,7 @@ void main() {
         email: testEmail,
         password: 'TestPassword123!',
         username: 'timeouttest_$timestamp',
-        file: null,
+        photoUrl: '',
       );
 
       stopwatch.stop();

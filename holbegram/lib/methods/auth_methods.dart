@@ -1,4 +1,3 @@
-import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../models/user.dart';
@@ -35,7 +34,7 @@ class AuthMethode {
     required String email,
     required String password,
     required String username,
-    Uint8List? file,
+    String photoUrl = '',
   }) async {
     if (email.isEmpty || password.isEmpty || username.isEmpty) {
       return 'Please fill all the fields';
@@ -55,7 +54,7 @@ class AuthMethode {
         email: email,
         username: username,
         bio: '',
-        photoUrl: '',
+        photoUrl: photoUrl,
         followers: [],
         following: [],
         posts: [],

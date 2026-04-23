@@ -1,6 +1,8 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import '../methods/auth_methods.dart';
+import 'auth/methods/user_storage.dart';
 
 class AddPicture extends StatefulWidget {
   final String email;
@@ -144,8 +146,51 @@ class _AddPictureState extends State<AddPicture> {
                           const Color.fromARGB(218, 226, 37, 24),
                         ),
                       ),
-                      onPressed: () {
-                        // TODO: Navigate to next screen or complete signup
+                      onPressed: () async {
+                        String photoUrl = '';
+
+                        try {
+                          // 1. Upload image to Cloudinary if selected
+                          if (_image != null) {
+                            print('Uploading image to Cloudinary...');
+                            photoUrl = await StorageMethods().uploadImageToStorage(
+                              false, // isPost
+                              'profile_pictures', // folder name in Cloudinary
+                              _image!,
+                            );
+                            print('Image uploaded successfully: $photoUrl');
+                          }
+
+                          // 2. Create user with photoUrl
+                          print('Creating user account...');
+                          String result = await AuthMethode().signUpUser(
+                            email: widget.email,
+                            password: widget.password,
+                            username: widget.username,
+                            photoUrl: photoUrl,
+                          );
+
+                          if (result == 'success') {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('success'),
+                              ),
+                            );
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(result),
+                              ),
+                            );
+                          }
+                        } catch (e) {
+                          print('Error during signup: $e');
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('Error: $e'),
+                            ),
+                          );
+                        }
                       },
                       child: const Text(
                         'Next',
